@@ -1,0 +1,618 @@
+/*
+Student id: u3201863
+Name: Caity Ngov
+Date: 23/03/2021
+*/
+
+#include<string>
+#include<iomanip>
+#include<iostream>
+#include<fstream>
+#include <string.h>
+#include<conio.h>
+#include <vector>
+#include <sstream>
+#include "main.h"
+
+using namespace std;
+
+//base class
+class Report {
+	string id;
+	string name;
+	int postcode;
+	string city;
+	double pur;
+	double ret;
+	string cusId;
+public:
+	Report();//constructor
+	~Report();//destructor
+
+	void setId(string);
+	void setName(string);
+	void setPostcode(int);
+	void setCity(string);
+	void setPur(double);
+	void setRet(double);
+	void setCusid(string);
+
+	string getId();
+	string getName();
+	int getPostcode();
+	string getCity();
+	double getPur();
+	double getRet();
+	string getCusid();
+};
+
+//base class function
+Report::Report() {
+	name = "\0";
+	city = "\0";
+}
+
+Report::~Report() {
+	
+}
+
+void Report::setId(string theId) {
+	id = theId;
+}
+
+void Report::setName(string theName) {
+	name = theName;
+}
+
+void Report::setPostcode(int theCode) {
+	postcode = theCode;
+}
+
+void Report::setCity(string theCity) {
+	city = theCity;
+}
+
+void Report::setPur(double thePur) {
+	pur = thePur;
+}
+
+void Report::setRet(double theRet) {
+	ret = theRet;
+}
+
+void Report::setCusid(string theCusId) {
+	cusId = theCusId;
+}
+
+string Report::getId() {
+	return id;
+}
+
+string Report::getName() {
+	return name;
+}
+
+int Report::getPostcode() {
+	return postcode;
+}
+
+string Report::getCity() {
+	return city;
+}
+
+double Report::getPur() {
+	return pur;
+}
+
+double Report::getRet() {
+	return ret;
+}
+
+string Report::getCusid() {
+	return cusId;
+}
+
+string displayPrice(double price) {
+	int priceInt;
+	double last;
+	string priceString = ".";
+
+	priceInt = (int)price;
+	last = price - (double)priceInt;
+	last = last * 100;
+	priceString = priceString + to_string((int)last);
+	while (true) {
+
+		int price2;
+		int last2;
+		string stringComma;
+		stringstream ss;
+
+		price2 = priceInt / 1000;
+		last2 = price2 * 1000;
+
+		stringComma = to_string(priceInt - last2);
+		ss << setw(3) << setfill('0') << stringComma;
+		if (price2 == 0) {
+			priceString = stringComma + priceString;
+			break;
+		}
+		priceString = ','+ss.str() + priceString;
+		priceInt = price2;
+		
+	}
+	return priceString;
+}
+
+
+void displayFile(Report* inReport) {
+	int count = 0;
+	double n = 0;
+	double purchase = 0;
+	for (int i = 0; i < 25; i++)
+	{
+		if (inReport[i].getName() == "") {
+			break;
+		}
+		
+		cout << setprecision(2) << fixed;
+		cout << setw(25) << left << inReport[i].getId()
+			<< setw(30) << inReport[i].getName()
+			<< setw(17) << inReport[i].getPostcode()
+			<< "$" << setw(15) << displayPrice(inReport[i].getPur())
+			<< "$" << setw(15) << displayPrice(inReport[i].getRet());
+		cout << "\n";
+	}
+}
+
+void displayFileNor(Report* inReport) {
+	int count = 0;
+	double n = 0;
+	double purchase = 0;
+	
+	for (int i = 0; i < 25; i++)
+	{
+		if (inReport[i].getName() == "") {
+			break;
+		}	
+		cout << setprecision(2) << fixed;
+		cout.imbue(std::locale(""));
+		cout << setw(25) << left << inReport[i].getId()
+			<< setw(30) << inReport[i].getName()
+			<< setw(17) << inReport[i].getPostcode()
+			<< "$" << setw(15) << inReport[i].getPur()
+			<< "$" << setw(15) << inReport[i].getRet();
+		cout << "\n";
+
+		count++;
+		n += inReport[i].getRet();
+		purchase += inReport[i].getPur();
+	}
+	cout << "\n";
+	cout << "The total of record is " << count << endl;
+	cout << "The total of purchase is " << displayPrice(purchase) << endl;
+	cout << "The total of return is " << displayPrice(n) << endl;
+	cout << "End checking Report";
+	cout << "\n";
+}
+
+void displayFileWithRelatedId(Report* inReport) {
+	
+	cout << "\n";
+	displayFileNor(inReport);
+	cout << "\n";
+	cout << "Related entity checking Report Assign1 2021";
+	cout << "\n";
+	cout << setprecision(2) << fixed;
+	int count = 0;
+	for (int i = 0; i < 25; i++) {
+		if (inReport[i].getName() == "") {
+			break;
+		}
+		// separate the data by comma
+		string str = inReport[i].getCusid();
+		vector<string> v;
+
+		stringstream ss(str);
+		cout << setw(25) << left << inReport[i].getId()
+			<< setw(15) << inReport[i].getName()
+			<< setw(15) << inReport[i].getCusid() << endl;
+		while (ss.good()) {
+			string substr;
+			getline(ss, substr, ',');
+			substr.erase(remove_if(substr.begin(), substr.end(), isspace), substr.end());
+			v.push_back(substr);
+			
+			for (int j = 0; j < 25; j++) {
+				if (inReport[j].getName() == "") {
+					break;
+				}
+				if (substr == inReport[j].getId()) {
+					cout << setw(35) << right << inReport[j].getId()
+						<< setw(40) << inReport[j].getName() << endl;
+				}
+				
+			}
+			
+		}
+		count++;
+	}
+	cout << "The total of record is " << count << endl;
+	cout << "End entity checking Report";
+	cout << "\n";
+}
+
+void swap(Report* a, Report* b)
+{
+	Report t = *a;
+	*a = *b;
+	*b = t;
+}
+
+int partition(Report* detail, int low, int high)
+{
+	int pivot = detail[high].getPostcode();    // pivot
+	int i = (low - 1);  // Index of smaller element
+	Report temp;
+	for (int j = low; j <= high - 1; j++)
+	{
+		// If current element is smaller than or
+		// equal to pivot
+		if (detail[j].getPostcode() <= pivot)
+		{
+			i++;    // increment index of smaller element
+			//swap(&detail[i], &detail[j]);
+			temp = detail[j];
+			detail[j] = detail[i];
+			detail[i] = temp;
+		}
+	}
+	//swap(&detail[i + 1], &detail[high]);
+	temp = detail[i + 1];
+	detail[i + 1] = detail[high];
+	detail[high] = temp;
+	return (i + 1);
+}
+
+void quickSort(Report* detail, int low, int high)
+{
+	if (low < high)
+	{
+		/* pi is partitioning index, arr[p] is now
+		   at right place */
+		int pi = partition(detail, low, high);
+
+		// Separately sort elements before
+		// partition and after partition
+		quickSort(detail, low, pi - 1);
+		quickSort(detail, pi + 1, high);
+	}
+
+}
+
+int partitionString(Report* detail, int low, int high)
+{
+
+	string pivot = detail[high].getName(); 
+	int i = (low - 1);  // Index of smaller element
+	Report temp;
+	for (int j = low; j <= high - 1; j++)
+	{
+		// If current element is smaller than or
+		// equal to pivot
+		if (detail[j].getName() <= pivot)
+		{
+			i++;   
+			temp = detail[j];
+			detail[j] = detail[i];
+			detail[i] = temp;
+		}
+	}
+	temp = detail[i + 1];
+	detail[i + 1] = detail[high];
+	detail[high] = temp;
+	return (i + 1);
+}
+
+void quickSortString(Report* detail, int low, int high)
+{
+	if (low < high)
+	{
+		int pi = partitionString(detail, low, high);
+
+		// Separately sort elements before
+		// partition and after partition
+		quickSortString(detail, low, pi - 1);
+		quickSortString(detail, pi + 1, high);
+	}
+
+}
+
+void displaySortString(Report* detail) {
+	int n = 24;
+	while (detail[n].getName() == "") {
+		n--;
+	}
+	quickSortString(detail, 0, n);
+	quickSort(detail, 0, n);
+	displayFile(detail);
+}
+
+void displaySort(Report* detail) {
+	int n = 24;
+	while (detail[n].getName() == "") {
+		n--;
+	}
+	quickSort(detail, 0, n);
+	displayFile(detail);
+}
+
+void displayFile1(Report* detail) {
+	ifstream inputFile;
+	string filename;
+
+	cout << "enter file name"<< endl;
+	cin >> filename;
+
+	inputFile.open(filename);
+
+	if (!inputFile)
+	{
+		cout << "I could not open the file.\n";
+	}
+	else {
+		cout << "File successfully read" << endl;
+	}
+	
+	//clear data
+	int emp;
+	double empt;
+	for (int h =0; h < 25; h++) {		
+		Report temp;
+		detail[h] = temp;
+	}
+	
+	string str;
+	stringstream str_line(str);
+	string str_temp;
+	int temp4{};
+
+	int i = 0;
+	while (getline(inputFile, str)) {
+		string data[7];
+		int j_start = 0;
+		int j = 0;
+		int j_index;
+		bool inside = false;
+
+		for (j_index = 0; j_index < str.length(); j_index++) {
+			if (j == 6 || j_index == str.length() - 1) {
+				data[j] = str.substr(j_start, str.length() - j_start);
+				if (str[j_index] == ',') {
+					data[j].erase(remove(data[j].begin(), data[j].end(), '"'), data[j].end());
+					data[j].erase(remove(data[j].begin(), data[j].end(), ','), data[j].end());
+				}
+				break;
+			}
+
+			if (str[j_index] == ',' && !inside) {
+				data[j] = str.substr(j_start, j_index - j_start);
+				data[j].erase(remove(data[j].begin(), data[j].end(), '"'), data[j].end());
+				data[j].erase(remove(data[j].begin(), data[j].end(), ','), data[j].end());
+				j_start = j_index + 1;
+				j++;
+			}
+			if (str[j_index] == '"') {
+				inside = !inside;
+
+			}
+
+		}
+		detail[i].setId(data[0]);
+		detail[i].setName(data[1]);
+		detail[i].setPostcode(stoi(data[2]));
+		detail[i].setCity(data[3]);
+		detail[i].setPur(stod(data[4]));
+		detail[i].setRet(stod(data[5]));
+		detail[i].setCusid(data[6]);
+		i++;
+	}
+}
+
+void Search(Report* inReport) {
+	double value;
+	double rP = 0;
+	double percent;
+	for (int i = 0; i < 25; i++) {	
+		value = inReport[i].getPur() * 0.25;		
+		if (inReport[i].getName() == "") {
+			break;
+		}
+		rP += inReport[i].getPur();
+		percent = (inReport[i].getRet() / inReport[i].getPur()) * 100;
+		if (inReport[i].getRet() > value) {
+			cout << setprecision(2) << fixed;
+			cout << setw(25) << left << inReport[i].getId()
+				<< setw(15) << inReport[i].getName()
+				<< setw(20) << displayPrice(inReport[i].getPur())
+				<< setw(15) << displayPrice(inReport[i].getRet())
+			 << percent << "%" << setw(15) <<endl;
+		}
+	
+	}
+	cout << "End report";
+	cout << "\n";
+}
+
+void valueCheck(Report* inReport) {
+	cout << "List of those whoes returns are greater than 25% of purchases" << endl <<
+		"with the value of related organizations account" << endl <<
+		"with warning of related or organizations acoounts total > 1,000,000 " << endl;
+	double value;
+	double rP = 0;
+	double percent;
+	for (int i = 0; i < 25; i++) {
+		value = inReport[i].getPur() * 0.25;
+		if (inReport[i].getName() == "") {
+			break;
+		}
+		rP += inReport[i].getPur();
+		percent = (inReport[i].getRet() / inReport[i].getPur()) * 100;
+		if (inReport[i].getRet() > value) {
+			string str = inReport[i].getCusid();
+			vector<string> v;
+			double sum{};
+			stringstream ss(str);
+			cout << setprecision(2) << fixed;
+			cout << setw(25) << left << inReport[i].getId()
+				<< setw(15) << inReport[i].getName()
+				<< setw(15) << inReport[i].getPostcode()
+				<< setw(15) << displayPrice(inReport[i].getPur())
+				<< setw(15) << displayPrice(inReport[i].getRet()) 
+				<< percent << "%" << setw(15) << endl;
+			while (ss.good()) {
+				string substr;
+				getline(ss, substr, ',');
+				substr.erase(remove_if(substr.begin(), substr.end(), isspace), substr.end());
+				v.push_back(substr);
+
+				for (int j = 0; j < 25; j++) {
+					if (inReport[j].getName() == "") {
+						break;
+					}
+					if (substr == inReport[j].getId()) {
+						sum += inReport[j].getPur();
+						//cout << setw(35) << right << inReport[j].getId()
+						//	<< setw(40) << inReport[j].getName() << endl;
+					}
+
+				}
+
+			}
+
+			if (sum > 100000)
+			{
+				cout << "******Warning the total account is " << displayPrice(sum) << endl;
+			}
+			
+		}
+
+	}
+	cout << "End report";
+	cout << "\n";
+
+}
+
+int main() {
+	//variable
+	string id, name;
+	string input;
+	
+	Report detail[25]; // 25 reports
+
+	ifstream inFile1("Data1.txt");
+	if (!inFile1) {
+		std::cout << "Cannot open Data1 file.\n";
+		return 1;
+	}
+	
+	string str;
+	stringstream str_line(str);
+	string str_temp;
+	int temp4{};
+	
+	int i = 0;
+	while (getline(inFile1, str)) {
+		string data[7];
+		int j_start = 0;
+		int j = 0; 
+		int j_index;
+		bool inside = false;
+
+		for ( j_index = 0; j_index < str.length(); j_index++) {
+			if (j == 6 || j_index== str.length()-1) {
+				data[j]=str.substr(j_start, str.length()-j_start);
+				if (str[j_index] == ',') {
+					data[j].erase(remove(data[j].begin(), data[j].end(), '"'), data[j].end());
+					data[j].erase(remove(data[j].begin(), data[j].end(), ','), data[j].end());
+				}
+				break;
+			}
+
+			if (str[j_index] == ',' && !inside) {
+				data[j]=str.substr(j_start, j_index - j_start);
+				data[j].erase(remove(data[j].begin(), data[j].end(), '"'), data[j].end());
+				data[j].erase(remove(data[j].begin(), data[j].end(), ','), data[j].end());
+				j_start = j_index + 1;
+				j++;
+			}
+			if (str[j_index] == '"') {				
+				inside = !inside;
+
+			}
+			
+		}
+		detail[i].setId(data[0]);
+		detail[i].setName(data[1]);
+		detail[i].setPostcode(stoi(data[2]));
+		detail[i].setCity(data[3]);
+		detail[i].setPur(stod(data[4]));
+		detail[i].setRet(stod(data[5]));
+		detail[i].setCusid(data[6]);
+		i++;
+	}
+
+	while (true) {
+		cout << "Assign1 2021" << endl;
+		cout << "File location" << endl;
+		cout << "Assign1 2021 Menu" << endl
+			<< "E(xit) - Exit" << endl
+			<< "R(ead) - Read File" << endl//print report to the screen //done
+			<< "Se(arch) - Search" << endl //list of those whos returns are greater than 25% of purchases
+			<< "V(alue) - Value Search (checks related)" << endl
+			/*•	you need to code not just a report that is able to search for accounts with more than 25% returns,
+			but also advise if that account has related accounts (related entities) with a total purchases value of
+			more than 1,000,000 $ (my “V” menu option), this report should show the total of the related entities purchase values */
+			<< "So(rt) - Sort Postcode" << endl //done
+			<< "Sob - Sort Both (postcode then name)" << endl
+			<< "P(ath) - Pathfind" << endl 
+			<< "F(ile) - Set filename" << endl; //allow you to change the file name. it will read the new file. for example there're two files and Rob 
+			//wants to readd another file so he just enter the name of the file and read that file //done
+		cin >> input;
+
+		if (input == "E" || input == "e") {
+			return 0;
+		}
+		if (input == "Se" || input == "se") {
+			cout << "Option selected: " << input << endl;
+			Search(detail);
+		}
+		if (input == "R" || input == "r") {
+			cout << "Option selected: " << input << endl;
+			displayFileWithRelatedId(detail);
+		}
+		if (input == "F" || input == "f") {
+			cout << "Option selected: " << input << endl;
+			displayFile1(detail);
+		}
+		if (input == "So" || input == "so") {
+			cout << "Option selected: " << input << endl;
+			displaySort(detail);
+		}
+		if (input == "Sob" || input == "sob") {
+			cout << "Option selected: " << input << endl;
+			displaySortString(detail);
+		}
+		if (input == "P" || input == "p") {
+			cout << "Option selected: (I didn't do this part)" << input << endl;
+			
+		}
+		if (input == "V" || input == "v") {
+			cout << "Option selected: " << input << endl;
+			valueCheck(detail);
+		}
+	}
+		
+	inFile1.close();
+	return 0;
+}
